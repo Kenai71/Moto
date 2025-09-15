@@ -3,58 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customizador de Motos 3D</title>
+    <title>Personalize sua Moto 3D</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="container3d"></div>
 
-    <div id="container-3d"></div>
+    <div id="painel-ui">
+        <h2>Personalize sua Moto</h2>
 
-    <div class="painel-ui">
-        <div class="logo">
-            <h1>Customizador</h1>
+        <div class="secao">
+            <label for="modelo">Escolha a Moto:</label>
+            <select id="modelo">
+                <option value="suzuki_gsx_750_bike">Suzuki GSX 750</option>
+                <option value="sports_bike">Moto Esportiva Genérica</option>
+            </select>
+        </div>
+
+        <div class="secao">
+            <h3>Cor da Carenagem</h3>
+            <div id="paleta-cores">
+                <div class="cor" style="background-color: #ff0000;" data-color="#ff0000"></div>
+                <div class="cor" style="background-color: #00ff00;" data-color="#00ff00"></div>
+                <div class="cor" style="background-color: #0000ff;" data-color="#0000ff"></div>
+                <div class="cor" style="background-color: #ffffff;" data-color="#ffffff"></div>
+                <div class="cor" style="background-color: #000000;" data-color="#000000"></div>
+                <div class="cor" style="background-color: #ffff00;" data-color="#ffff00"></div>
+                <div class="cor" style="background-color: #ffa500;" data-color="#ffa500"></div>
+                <div class="cor" style="background-color: #800080;" data-color="#800080"></div>
+            </div>
         </div>
         
-        <div class="secao">
-            <h2>Escolha sua Moto</h2>
-            <div class="seletor-grupo">
-                <label for="marca-select">Marca:</label>
-                <select id="marca-select">
-                    <option value="">-- Selecione --</option>
-                </select>
-            </div>
-            <div class="seletor-grupo">
-                <label for="modelo-select">Modelo:</label>
-                <select id="modelo-select">
-                    <option value="">-- Selecione --</option>
-                </select>
-            </div>
         </div>
-
-        <div class="secao">
-            <h2>Cores e Materiais</h2>
-            <p>Clique em uma peça da moto e depois escolha uma cor:</p>
-            <div id="cores-container">
-                <div class="cor-box" style="background-color: #000000;" data-color="#000000"></div>
-                <div class="cor-box" style="background-color: #ffffff;" data-color="#ffffff"></div>
-                <div class="cor-box" style="background-color: #ff0000;" data-color="#ff0000"></div>
-                <div class="cor-box" style="background-color: #0000ff;" data-color="#0000ff"></div>
-                <div class="cor-box" style="background-color: #ffff00;" data-color="#ffff00"></div>
-                <div class="cor-box" style="background-color: #444444;" data-color="#444444"></div>
-            </div>
-        </div>
-
-    </div>
 
     <script type="importmap">
-    {
-        "imports": {
-            "three": "https://unpkg.com/three@0.157.0/build/three.module.js",
-            "three/addons/": "https://unpkg.com/three@0.157.0/examples/jsm/"
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.164.1/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.164.1/examples/jsm/"
+            }
         }
-    }
     </script>
-
-    <script type="module" src="app.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
