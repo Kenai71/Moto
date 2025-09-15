@@ -1,6 +1,8 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js'; // Caminho corrigido
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 
 // --- Configuração Básica ---
 const container = document.getElementById('container3d');
@@ -26,7 +28,6 @@ controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
 camera.position.z = 5;
 
 // --- Lógica de Carregamento e Troca de Modelos ---
-const loader = new GLTFLoader();
 let motoAtual;
 
 // Raycaster e Mouse
@@ -40,13 +41,33 @@ function limparCena() {
     }
 }
 
-function carregarModelo(nomeModelo) {
+function carregarModelo(nomeArquivo) {
     limparCena();
     objetosSelecionados = [];
-    const caminhoModelo = `modelos/${nomeModelo}.glb`;
 
-    loader.load(caminhoModelo, (gltf) => {
-        motoAtual = gltf.scene;
+    const caminhoCompleto = `modelos/${nomeArquivo}`;
+    const extensao = nomeArquivo.split('.').pop().toLowerCase();
+    
+    let loader;
+
+    switch (extensao) {
+        case 'glb':
+            loader = new GLTFLoader();
+            break;
+        case 'obj':
+            loader = new OBJLoader();
+            break;
+        case 'fbx':
+            loader = new FBXLoader();
+            break;
+        default:
+            console.error(`Carregador não encontrado para a extensão: ${extensao}`);
+            return;
+    }
+
+    loader.load(caminhoCompleto, (objetoCarregado) => {
+        motoAtual = objetoCarregado.scene || objetoCarregado; 
+
         const box = new THREE.Box3().setFromObject(motoAtual);
         const center = box.getCenter(new THREE.Vector3());
         motoAtual.position.sub(center);
@@ -61,7 +82,6 @@ seletorModelo.addEventListener('change', (event) => {
 
 carregarModelo(seletorModelo.value);
 
-// Variável para armazenar a cor original de cada objeto selecionado
 let coresOriginais = new Map();
 
 // --- Lógica para Pré-visualização e Aplicação da Cor ---
