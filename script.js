@@ -82,62 +82,24 @@ seletorModelo.addEventListener('change', (event) => {
 
 carregarModelo(seletorModelo.value);
 
-let coresOriginais = new Map();
+// --- Lógica para Aplicação da Cor (AGORA COM PRÉ-VISUALIZAÇÃO) ---
+const seletorCor = document.getElementById('seletor-cor');
 
-// --- Lógica para Pré-visualização e Aplicação da Cor ---
-const paletaCores = document.getElementById('paleta-cores');
-
-paletaCores.addEventListener('mousedown', (event) => {
-    if (objetosSelecionados.length === 0) return;
-
-    objetosSelecionados.forEach(obj => {
-        if (!coresOriginais.has(obj.uuid)) {
-            coresOriginais.set(obj.uuid, obj.material.color.clone());
-        }
-    });
-});
-
-paletaCores.addEventListener('mousemove', (event) => {
-    if (event.buttons !== 1) return;
-
+seletorCor.addEventListener('input', (event) => {
     if (objetosSelecionados.length > 0) {
-        if (event.target.classList.contains('cor')) {
-            const novaCor = event.target.dataset.color;
-            objetosSelecionados.forEach(obj => {
+        const novaCor = event.target.value;
+        objetosSelecionados.forEach(obj => {
+            if (obj.material) {
+                // Remove o destaque emissivo para mostrar a cor pura
+                obj.material.emissive.set(0x000000); 
                 obj.material.color.set(novaCor);
-            });
-        }
+            }
+        });
     }
 });
 
-paletaCores.addEventListener('mouseup', (event) => {
-    if (objetosSelecionados.length > 0) {
-        if (event.target.classList.contains('cor')) {
-            const cor = event.target.dataset.color;
-            objetosSelecionados.forEach((objeto) => {
-                objeto.material.color.set(cor);
-                objeto.material.emissive.set(0x000000);
-            });
-            objetosSelecionados = [];
-            coresOriginais.clear();
-        }
-    }
-});
-
-// --- Lógica de Clique e Drag para Seleção ---
-let mouseStart = new THREE.Vector2();
-
-container.addEventListener('mousedown', (event) => {
-    mouseStart.x = event.clientX;
-    mouseStart.y = event.clientY;
-});
-
-container.addEventListener('mouseup', (event) => {
-    const dragThreshold = 5;
-    if (Math.abs(event.clientX - mouseStart.x) > dragThreshold || Math.abs(event.clientY - mouseStart.y) > dragThreshold) {
-        return;
-    }
-
+// --- Lógica de Clique para Seleção ---
+container.addEventListener('click', (event) => {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -147,25 +109,36 @@ container.addEventListener('mouseup', (event) => {
 
     const intersects = raycaster.intersectObjects(motoAtual.children, true);
     
+    // Limpa a seleção se clicar em um local sem objetos
     if (intersects.length === 0) {
         objetosSelecionados.forEach(obj => {
-            obj.material.emissive.set(0x000000);
+            if (obj.material) {
+                obj.material.emissive.set(0x000000);
+            }
         });
         objetosSelecionados = [];
         return;
     }
 
     const objetoClicado = intersects[0].object;
+
+    // Apenas mexe com objetos do tipo Mesh
     if (objetoClicado.isMesh) {
         const index = objetosSelecionados.indexOf(objetoClicado);
         if (index === -1) {
+            // Adiciona objeto à seleção e aplica emissão para destaque
             objetosSelecionados.push(objetoClicado);
+            if (objetoClicado.material) {
+                objetoClicado.material.emissive.set(0x555555);
+            }
             console.log("Objeto adicionado:", objetoClicado.name);
-            objetoClicado.material.emissive.set(0x555555);
         } else {
+            // Remove objeto da seleção e remove a emissão
             objetosSelecionados.splice(index, 1);
+            if (objetoClicado.material) {
+                objetoClicado.material.emissive.set(0x000000);
+            }
             console.log("Objeto removido:", objetoClicado.name);
-            objetoClicado.material.emissive.set(0x000000);
         }
     }
 });
